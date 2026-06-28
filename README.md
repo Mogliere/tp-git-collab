@@ -1,2 +1,3 @@
 # tp-git-collab
-DST 2 formation
+
+Modification du README par une 2eme personne directement sur GitHub
