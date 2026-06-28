@@ -1,3 +1,10 @@
+import requests
+
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning) # car problème réseau
+                                                                    # entreprise
+
+# ici l'API renvoit directement la température en Celsius, donc pas besoin de conversion
 def KelvinToCelsius(Tkelvin):
     """Convert temperature from Kelvin to Celsius
        arrondi."""
@@ -10,10 +17,35 @@ def MessageVilleEtTemperature(ville, temperature):
     print(f"La température à {ville} est de {temperature}°C.")
 
 
+def GetTemperatureFromAPI(ville, api_key):
+    """Get the temperature in Kelvin from the OpenWeatherMap API."""
+    
+    # Construire l'URL
+    url = f"https://api.openweathermap.org/data/2.5/weather?q={ville}&appid={api_key}&units=metric"
+
+    # Faire la requête
+    response = requests.get(url, verify=False)  # car problème réseau entreprise
+
+    # Vérifier que la requête a réussi (code HTTP 200)
+    if response.status_code != 200:
+        raise Exception(f"Erreur lors de la requête à l'API: {response.status_code}")
+
+    # réponse au format JSON
+    data = response.json()
+
+    temperature = data["main"]["temp"]
+
+    return temperature
+
+
 if __name__ == "__main__":
     
-    Tkelvin = 40+273.15
-    
-    Tcelsius = KelvinToCelsius(Tkelvin)
-    
-    MessageVilleEtTemperature("Paris", Tcelsius)
+    # Tkelvin = 40+273.15
+    # Tcelsius = KelvinToCelsius(Tkelvin)  
+    # MessageVilleEtTemperature("Paris", Tcelsius)
+
+    api_key = "62b32cf2876cbabbd135b211f0b4c4f3"
+    ville = "Paris"
+
+    temperature = GetTemperatureFromAPI(ville, api_key)
+    MessageVilleEtTemperature(ville, temperature)
